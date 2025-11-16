@@ -175,3 +175,9 @@ stretch your skills.
     - lines 39-40, and 53-54
   - **magazine_test.py**
     - lines 35-36, 55-56, 59-60, 90-91, and 105-106
+
+
+
+
+
+Add
