@@ -168,18 +168,17 @@ class Magazine:
         Returns a list of authors who have written
         more than 2 articles for this magazine.
         """
-        # This one is trickier! We need to count.
         
-        author_counts = {}
+        author_counts = {} # Empty dictionary
         my_articles = self.articles()
         
         # 1. Loop through all my articles and count each author
         for article in my_articles:
             author = article.author
-            if author in author_counts:
+            if author in author_counts: # If author already on written in records add 1
                 author_counts[author] += 1
             else:
-                author_counts[author] = 1
+                author_counts[author] = 1 # Write their name down and start 1
                 
         # 2. Filter that dictionary
         #    Give me the author for each (author, count) pair
@@ -188,3 +187,21 @@ class Magazine:
         
         # 3. Handle the "None" case (tested in test_contributing_authors)
         return result if result else None
+
+    # --- NEW METHOD ADDED BELOW ---
+    @classmethod
+    def top_publisher(cls):
+        # 1. Check if there are NO articles in the entire system
+        if not Article.all:
+            return None
+        
+        # 2. Use max() to find the magazine with the longest list of articles
+        # cls.all is the list of all Magazine instances
+        most_active_magazine = max(cls.all, key=lambda mag: len(mag.articles()))
+        
+        # 3. Double check: Does the winner actually have 0 articles?
+        # (This happens if magazines exist but none have articles yet)
+        if len(most_active_magazine.articles()) == 0:
+            return None
+            
+        return most_active_magazine
