@@ -72,16 +72,40 @@ class Author:
                 pass
 
     def articles(self):
-        pass
+        # Returns a lst of all articles written by this author
+        # Filter the SSOT
+        return [article for article in Article.all if article.author == self ]
 
     def magazines(self):
-        pass
+        # Returns a unique list of magazines this author has contributed to
+        my_articles = self.articles() # Gets all my articles
+
+        my_magazines = [article.magazine for article in my_articles] # Gets magazine for each article
+
+        return list(set(my_magazines)) # Uses set to only get unique magazines
 
     def add_article(self, magazine, title):
-        pass
+        # A new article and associates it with author
+        # self is the author insatnce 
+        # Automatically runs Article.__init__
+        # And add the new article to article.all
+
+        return Article(self, magazine, title)
 
     def topic_areas(self):
-        pass
+        #Returns a unique list of categories from the author's magazines
+        # 1. Get all my unique magazines
+        my_magazines = self.magazines()
+        
+        # 2. Handle the "None" case (tested in test_topic_areas_are_unique)
+        if not my_magazines:
+            return None
+            
+        # 3. Get the category from each magazine
+        categories = [mag.category for mag in my_magazines]
+        
+        # 4. Return the unique list
+        return list(set(categories))
 
 
 class Magazine:
@@ -119,13 +143,48 @@ class Magazine:
             self._category = new_category
 
     def articles(self):
-        pass
+        # Returns a lis of all articles published in this magazine
+        return [ article for article in Article.all if article.magazine == self]
 
     def contributors(self):
-        pass
+        # Returns a unique list of authors who wrote this magazine 
+        my_articles = self.articles()
+        my_authors = [article.author for article in my_articles]
+        return list(set(my_authors))
 
     def article_titles(self):
-        pass
+        # Returns a list of titles for this magazines articles
+        #Returns a list of titles for this magazine's articles"""
+        my_articles = self.articles()
+        
+        # Handle the "None" case (tested in test_article_titles)
+        if not my_articles:
+            return None
+            
+        return [article.title for article in my_articles]
 
     def contributing_authors(self):
-        pass
+        """
+        Returns a list of authors who have written
+        more than 2 articles for this magazine.
+        """
+        # This one is trickier! We need to count.
+        
+        author_counts = {}
+        my_articles = self.articles()
+        
+        # 1. Loop through all my articles and count each author
+        for article in my_articles:
+            author = article.author
+            if author in author_counts:
+                author_counts[author] += 1
+            else:
+                author_counts[author] = 1
+                
+        # 2. Filter that dictionary
+        #    Give me the author for each (author, count) pair
+        #    if the count is greater than 2
+        result = [author for author, count in author_counts.items() if count > 2]
+        
+        # 3. Handle the "None" case (tested in test_contributing_authors)
+        return result if result else None
