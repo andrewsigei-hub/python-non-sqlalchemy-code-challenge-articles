@@ -9,13 +9,11 @@ class Article:
         Article.all.append(self)
 
     ## Title Getter
-
     @property
     def title(self):
         return self._title
 
     ## Title Setter
-
     @title.setter
     def title(self, title):
         ## HASATTR
@@ -34,6 +32,7 @@ class Article:
     def author(self, author):
         if not isinstance(author, Author):
             raise TypeError("Author must be an instance of Author class")
+        self._author = author  # Assign value after type check
 
     ## magazine getter
     @property
@@ -45,6 +44,7 @@ class Article:
     def magazine(self, magazine):
         if not isinstance(magazine, Magazine):
             raise TypeError("Magazine must be an instance magazine class")
+        self._magazine = magazine  # Assign value after type check
 
 
 class Author:
@@ -58,10 +58,9 @@ class Author:
     @name.setter
     def name(self, name):
        if hasattr(self, "_name"):
-        raise AttributeError("Author name cannot be changed after set")
+           raise AttributeError("Author name cannot be changed after set")
        if isinstance(name, str) and len(name) > 0:
-        self._name = name
-
+           self._name = name
 
     def articles(self):
         articles_by_author = []  ## New list
@@ -74,7 +73,6 @@ class Author:
 
     def magazines(self):
         magazines = []
-
         for article in self.articles():
             if article.magazine not in magazines:
                 magazines.append(article.magazine)
@@ -85,30 +83,26 @@ class Author:
     ):  ## Create a new article instance associated with authors name
         if not isinstance(magazine, Magazine):
             raise TypeError("Argument must be a magazine instance")
-
         new_article = Article(self, magazine, title)
         return new_article
 
+    ## Aggregate Method
+    def topic_areas(self):
+        categories = []
 
-## Aggregate Method
+        # 1. Get the unique list of Magazine objects
+        unique_mags = self.magazines()  # Sets automatically remove duplicates
 
+        if not unique_mags:
+            return None
 
-def topic_areas(self):
-    categories = []
+        for mag in unique_mags:
+            category_name = mag.category  ## 
 
-    # 1. Get the unique list of Magazine objects
-    unique_mags = self.magazines()  # Sets automatically remove duplicates
+            if category_name not in categories:
+                categories.append(category_name)  ## Logic allows for magazines that share a category to be added 
 
-    if not unique_mags:
-        return None
-
-    for mag in unique_mags:
-        category_name = mag.category ## 
-
-        if category_name not in categories:
-            categories.append(category_name) ## Logic allows for magaiznes that share a catergory to be added 
-
-    return categories
+        return categories
 
 
 class Magazine:
@@ -139,17 +133,65 @@ class Magazine:
     def category(self, category):
         if isinstance(category, str) and len(category) > 0:
             self._category = category
+        else: 
+            raise ValueError("Category can't be an empty string")
+
+    def articles(self):  ## Added articles method
+        articles_list = []
+        for article in Article.all:
+            if article.magazine == self:
+                articles_list.append(article)
+        return articles_list
 
     def contributors(self):
         authors = []
         for article in self.articles():
             if article.author not in authors:
                 authors.append(article.author)
-
         return authors
 
     def article_titles(self):
-        pass
+        titles = []
+        for article in self.articles():
+            titles.append(article.title)
+        if titles:
+            return titles
+        return None
 
-    def contributing_authors(self):
-        pass
+    def contributing_authors(self):  
+        author_counts = {}
+        for article in self.articles():
+            if article.author not in author_counts:
+                author_counts[article.author] = 1
+            else:
+                author_counts[article.author] += 1
+
+        result = []
+        for author in author_counts:
+            if author_counts[author] > 2:
+                result.append(author)
+
+        if result:
+            return result
+        return None
+
+    @classmethod
+    def top_publisher(cls):  
+        if not Article.all:
+            return None
+
+        magazine_counts = {}
+        for article in Article.all:
+            if article.magazine not in magazine_counts:
+                magazine_counts[article.magazine] = 1
+            else:
+                magazine_counts[article.magazine] += 1
+
+        top_magazine = None
+        max_count = 0
+        for magazine in magazine_counts:
+            if magazine_counts[magazine] > max_count:
+                max_count = magazine_counts[magazine]
+                top_magazine = magazine
+
+        return top_magazine
