@@ -78,7 +78,7 @@ class Author:
         for article in self.articles():
             if article.magazine not in magazines:
                 magazines.append(article.magazine)
-            return magazines
+        return magazines
 
     def add_article(
         self, magazine, title
