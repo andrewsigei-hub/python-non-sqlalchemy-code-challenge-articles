@@ -57,12 +57,11 @@ class Author:
 
     @name.setter
     def name(self, name):
-        if isinstance(name, str) and len(name) > 0:
-            self._name = name
-        else:
-            raise ValueError("Name should contain string ")
-        if hasattr(self, "_name"):  ## Stops name from being changed later
-            raise AttributeError("Author name cannot be changed after set")
+       if hasattr(self, "_name"):
+        raise AttributeError("Author name cannot be changed after set")
+       if isinstance(name, str) and len(name) > 0:
+        self._name = name
+
 
     def articles(self):
         articles_by_author = []  ## New list
